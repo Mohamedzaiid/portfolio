@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mohamed Zaid - Portfolio Website
 
-## Getting Started
+A premium interactive portfolio website featuring fluid cursor simulations, physics-based 3D card tilt, scroll-driven animations, and a polished dark theme.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚡ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Fluid Splash Cursor**: Interactive WebGL fluid simulation that follows mouse movements in the Hero section
+- **3D Tilt Cards**: Physics-based (spring) 3D tilt effect on hover for all interaction cards
+- **Spotlight Effects**: Dynamic spotlight gradients that follow cursor position
+- **Scroll Animations**: Smooth reveal animations using Framer Motion
+- **Responsive Design**: Fully optimized for all device sizes
+- **Accessibility**: Reduced motion support and keyboard navigation
+- **SEO Optimized**: Built with Next.js metadata API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Project Structure
 
-## Learn More
+```
+├── app/
+│   ├── layout.tsx       # Root layout with SEO metadata
+│   ├── page.tsx         # Main portfolio page
+│   └── globals.css      # Global styles and design tokens
+├── components/
+│   ├── effects/         # Interactive effects (SplashCursor, FluidCursor, etc.)
+│   ├── layout/          # Header, Footer
+│   ├── sections/        # Hero, Highlights, Pillars, Projects, Skills, Experience, Education
+│   └── ui/              # Reusable UI components (Card, Button, SectionWrapper)
+├── data/
+│   └── content.ts       # Centralized content file
+├── hooks/               # Custom React hooks (useReducedMotion)
+└── public/              # Static assets and Resume PDF
+```
 
-To learn more about Next.js, take a look at the following resources:
+## ✏️ Editing Content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All portfolio content is securely managed in `data/content.ts`. You can easily update:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Personal Info**: `personalInfo` object
+- **Projects**: `projects` array
+- **Skills**: `skills` object categories
+- **Experience**: `experience` array
+- **Education**: `education` object
 
-## Deploy on Vercel
+## 🎨 Customization
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Colors
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Defined in `app/globals.css` as CSS variables:
+
+```css
+:root {
+  --bg-primary: #0a0a0f;
+  --accent: #6366f1;
+  /* ... */
+}
+```
+
+### Components
+
+- **Card.tsx**: Controlled via props like `tilt`, `spotlight`, `glowColor`.
+- **SplashCursor.tsx**: Configurable fluid physics (sim resolution, dissipation, curl, etc.).
+
+## 🌐 Deployment
+
+Ready for zero-config deployment on [Vercel](https://vercel.com).
+
+```bash
+npx vercel
+```
+
+## 📝 License
+
+MIT
