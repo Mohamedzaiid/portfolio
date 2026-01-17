@@ -65,7 +65,7 @@ const useResizeObserver = (
     if (!window.ResizeObserver) {
       const handleResize = () => callback();
       window.addEventListener("resize", handleResize);
-      callback();
+      requestAnimationFrame(callback);
       return () => window.removeEventListener("resize", handleResize);
     }
 
@@ -76,7 +76,7 @@ const useResizeObserver = (
       return observer;
     });
 
-    callback();
+    requestAnimationFrame(callback);
 
     return () => {
       observers.forEach((observer) => observer?.disconnect());

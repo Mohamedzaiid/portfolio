@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import {
   SectionWrapper,
@@ -10,7 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { skills } from "@/data/content";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const categoryIcons: Record<string, JSX.Element> = {
+const categoryIcons: Record<string, React.ReactNode> = {
   Frontend: (
     <svg
       className="w-5 h-5"

@@ -72,13 +72,13 @@ export function Footer() {
                 ? { opacity: 1 }
                 : { opacity: 1, y: 0 }
               : reducedMotion
-              ? { opacity: 0 }
-              : { opacity: 0, y: 30 }
+                ? { opacity: 0 }
+                : { opacity: 0, y: 30 }
           }
           transition={{ duration: reducedMotion ? 0.3 : 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Let's Work Together
+            Let&apos;s Work Together
           </h2>
           <p className="text-lg md:text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
             {footerContent.tagline}

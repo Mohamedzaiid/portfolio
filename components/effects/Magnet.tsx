@@ -39,7 +39,11 @@ const Magnet: React.FC<MagnetProps> = ({
 
   useEffect(() => {
     if (disabled) {
-      setPosition({ x: 0, y: 0 });
+      setTimeout(() => {
+        setPosition((prev) =>
+          prev.x === 0 && prev.y === 0 ? prev : { x: 0, y: 0 },
+        );
+      }, 0);
       return;
     }
 

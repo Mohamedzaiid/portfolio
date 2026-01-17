@@ -1,4 +1,6 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef } from "react";
 
 interface ColorRGB {
@@ -76,9 +78,9 @@ export default function SplashCursor({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let pointers: Pointer[] = [pointerPrototype()];
+    const pointers: Pointer[] = [pointerPrototype()];
 
-    let config = {
+    const config = {
       SIM_RESOLUTION: SIM_RESOLUTION!,
       DYE_RESOLUTION: DYE_RESOLUTION!,
       CAPTURE_RESOLUTION: CAPTURE_RESOLUTION!,
@@ -310,7 +312,7 @@ export default function SplashCursor({
     }
 
     function getUniforms(program: WebGLProgram) {
-      let uniforms: Record<string, WebGLUniformLocation | null> = {};
+      const uniforms: Record<string, WebGLUniformLocation | null> = {};
       const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
       for (let i = 0; i < uniformCount; i++) {
         const uniformInfo = gl.getActiveUniform(program, i);
@@ -324,68 +326,60 @@ export default function SplashCursor({
       return uniforms;
     }
 
-    class Program {
-      program: WebGLProgram | null;
-      uniforms: Record<string, WebGLUniformLocation | null>;
+    function createProgramWrapper(
+      vertexShader: WebGLShader | null,
+      fragmentShader: WebGLShader | null,
+    ) {
+      const program = createProgram(vertexShader, fragmentShader);
+      const uniforms = program ? getUniforms(program) : {};
 
-      constructor(
-        vertexShader: WebGLShader | null,
-        fragmentShader: WebGLShader | null,
-      ) {
-        this.program = createProgram(vertexShader, fragmentShader);
-        this.uniforms = this.program ? getUniforms(this.program) : {};
-      }
-
-      bind() {
-        if (this.program) gl.useProgram(this.program);
-      }
+      return {
+        program,
+        uniforms,
+        bind: () => {
+          if (program) gl!.useProgram(program);
+        },
+      };
     }
 
-    class Material {
-      vertexShader: WebGLShader | null;
-      fragmentShaderSource: string;
-      programs: Record<number, WebGLProgram | null>;
-      activeProgram: WebGLProgram | null;
-      uniforms: Record<string, WebGLUniformLocation | null>;
+    function createMaterialWrapper(
+      vertexShader: WebGLShader | null,
+      fragmentShaderSource: string,
+    ) {
+      const programs: Record<number, WebGLProgram | null> = {};
+      let activeProgram: WebGLProgram | null = null;
+      const uniforms: Record<string, WebGLUniformLocation | null> = {};
 
-      constructor(
-        vertexShader: WebGLShader | null,
-        fragmentShaderSource: string,
-      ) {
-        this.vertexShader = vertexShader;
-        this.fragmentShaderSource = fragmentShaderSource;
-        this.programs = {};
-        this.activeProgram = null;
-        this.uniforms = {};
-      }
-
-      setKeywords(keywords: string[]) {
-        let hash = 0;
-        for (const kw of keywords) {
-          hash += hashCode(kw);
-        }
-        let program = this.programs[hash];
-        if (program == null) {
-          const fragmentShader = compileShader(
-            gl.FRAGMENT_SHADER,
-            this.fragmentShaderSource,
-            keywords,
-          );
-          program = createProgram(this.vertexShader, fragmentShader);
-          this.programs[hash] = program;
-        }
-        if (program === this.activeProgram) return;
-        if (program) {
-          this.uniforms = getUniforms(program);
-        }
-        this.activeProgram = program;
-      }
-
-      bind() {
-        if (this.activeProgram) {
-          gl.useProgram(this.activeProgram);
-        }
-      }
+      return {
+        uniforms,
+        setKeywords: (keywords: string[]) => {
+          let hash = 0;
+          for (const kw of keywords) {
+            hash += hashCode(kw);
+          }
+          let program = programs[hash];
+          if (program == null) {
+            const fragmentShader = compileShader(
+              gl!.FRAGMENT_SHADER,
+              fragmentShaderSource,
+              keywords,
+            );
+            program = createProgram(vertexShader, fragmentShader);
+            programs[hash] = program;
+          }
+          if (program === activeProgram) return;
+          if (program) {
+            const newUniforms = getUniforms(program);
+            // Clear and update uniforms object
+            for (const key in uniforms) delete uniforms[key];
+            Object.assign(uniforms, newUniforms);
+          }
+          activeProgram = program;
+        },
+        bind: () => {
+          if (activeProgram) gl!.useProgram(activeProgram);
+        },
+      };
     }
 
     const baseVertexShader = compileShader(
@@ -744,19 +738,34 @@ export default function SplashCursor({
     let curl: FBO;
     let pressure: DoubleFBO;
 
-    const copyProgram = new Program(baseVertexShader, copyShader);
-    const clearProgram = new Program(baseVertexShader, clearShader);
-    const splatProgram = new Program(baseVertexShader, splatShader);
-    const advectionProgram = new Program(baseVertexShader, advectionShader);
-    const divergenceProgram = new Program(baseVertexShader, divergenceShader);
-    const curlProgram = new Program(baseVertexShader, curlShader);
-    const vorticityProgram = new Program(baseVertexShader, vorticityShader);
-    const pressureProgram = new Program(baseVertexShader, pressureShader);
-    const gradienSubtractProgram = new Program(
+    const copyProgram = createProgramWrapper(baseVertexShader, copyShader);
+    const clearProgram = createProgramWrapper(baseVertexShader, clearShader);
+    const splatProgram = createProgramWrapper(baseVertexShader, splatShader);
+    const advectionProgram = createProgramWrapper(
+      baseVertexShader,
+      advectionShader,
+    );
+    const divergenceProgram = createProgramWrapper(
+      baseVertexShader,
+      divergenceShader,
+    );
+    const curlProgram = createProgramWrapper(baseVertexShader, curlShader);
+    const vorticityProgram = createProgramWrapper(
+      baseVertexShader,
+      vorticityShader,
+    );
+    const pressureProgram = createProgramWrapper(
+      baseVertexShader,
+      pressureShader,
+    );
+    const gradienSubtractProgram = createProgramWrapper(
       baseVertexShader,
       gradientSubtractShader,
     );
-    const displayMaterial = new Material(baseVertexShader, displayShaderSource);
+    const displayMaterial = createMaterialWrapper(
+      baseVertexShader,
+      displayShaderSource,
+    );
 
     function createFBO(
       w: number,
@@ -972,7 +981,7 @@ export default function SplashCursor({
       const w = gl.drawingBufferWidth;
       const h = gl.drawingBufferHeight;
       const aspectRatio = w / h;
-      let aspect = aspectRatio < 1 ? 1 / aspectRatio : aspectRatio;
+      const aspect = aspectRatio < 1 ? 1 / aspectRatio : aspectRatio;
       const min = Math.round(resolution);
       const max = Math.round(resolution * aspect);
       if (w > h) {
