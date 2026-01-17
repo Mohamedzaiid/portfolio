@@ -31,7 +31,7 @@ export function Experience() {
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-accent via-accent/50 to-transparent" />
 
           {experience.map((company, companyIndex) => (
-            <div key={company.company} className="mb-12">
+            <div key={company.company} className="mb-12 ">
               {/* Company header */}
               <motion.div
                 initial={
@@ -42,15 +42,21 @@ export function Experience() {
                 }
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: reducedMotion ? 0.3 : 0.5 }}
-                className="relative pl-12 md:pl-0 md:text-center mb-8"
+                className="relative pl-12 md:pl-0 md:text-center mb-8 md:pt-8"
               >
                 {/* Timeline dot */}
                 <div className="absolute left-2 md:left-1/2 md:-translate-x-1/2 top-1 w-4 h-4 rounded-full bg-accent shadow-lg shadow-accent/50" />
 
                 <h3 className="text-xl font-semibold text-white">
-                  {company.company}
+                  <span className="bg-background px-2 relative z-10">
+                    {company.company}
+                  </span>
                 </h3>
-                <p className="text-text-secondary">{company.location}</p>
+                <p className="text-text-secondary">
+                  <span className="bg-background px-2 relative z-10">
+                    {company.location}
+                  </span>
+                </p>
               </motion.div>
 
               {/* Roles */}
